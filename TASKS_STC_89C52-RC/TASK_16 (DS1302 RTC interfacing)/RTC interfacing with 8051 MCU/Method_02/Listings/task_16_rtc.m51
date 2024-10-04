@@ -1,0 +1,330 @@
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    08/21/2024  12:23:02  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\STARTUP.obj, .\Objects\main.obj, .\Objects\rtc.obj, .\Objects\LCD.obj TO .\Objects
+>> \task_16_rtc PRINT (.\Listings\task_16_rtc.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\STARTUP.obj (?C_STARTUP)
+  .\Objects\main.obj (MAIN)
+  .\Objects\rtc.obj (RTC)
+  .\Objects\LCD.obj (LCD)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?COPY)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?CLDPTR)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?CSTOPTR)
+
+
+LINK MAP OF MODULE:  .\Objects\task_16_rtc (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000BH     UNIT         _DATA_GROUP_
+            IDATA   0013H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     015EH     UNIT         ?C?LIB_CODE
+            CODE    095EH     007AH     UNIT         ?PR?_LCD_DISPLAYTIMEDATE?LCD
+            CODE    09D8H     0036H     UNIT         ?PR?MAIN?MAIN
+            CODE    0A0EH     002FH     UNIT         ?PR?_RTC_WRITETIMEDATE?RTC
+            CODE    0A3DH     002FH     UNIT         ?PR?_RTC_READTIMEDATE?RTC
+            CODE    0A6CH     0016H     UNIT         ?PR?RECEIVE_BYTE?RTC
+            CODE    0A82H     0014H     UNIT         ?PR?LCD_INIT?LCD
+            CODE    0A96H     0014H     UNIT         ?PR?_LCD_DATA?LCD
+            CODE    0AAAH     0013H     UNIT         ?PR?_SEND_BYTE?RTC
+            CODE    0ABDH     000CH     UNIT         ?C_C51STARTUP
+            CODE    0AC9H     000BH     UNIT         ?PR?_LCD_COMMAND?LCD
+            CODE    0AD4H     0007H     UNIT         ?CO?MAIN
+            CODE    0ADBH     0005H     UNIT         ?PR?RTC_INIT?RTC
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\task_16_rtc (?C_STARTUP)
+
+
+SEGMENT                                DATA_GROUP 
+  +--> CALLED SEGMENT                START    LENGTH
+----------------------------------------------------
+?C_C51STARTUP                        -----    -----
+  +--> ?PR?MAIN?MAIN
+
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  08/21/2024  12:23:02  PAGE 2
+
+
+?PR?MAIN?MAIN                        0008H    0007H
+  +--> ?CO?MAIN
+  +--> ?PR?RTC_INIT?RTC
+  +--> ?PR?LCD_INIT?LCD
+  +--> ?PR?_RTC_WRITETIMEDATE?RTC
+  +--> ?PR?_RTC_READTIMEDATE?RTC
+  +--> ?PR?_LCD_DISPLAYTIMEDATE?LCD
+
+?PR?LCD_INIT?LCD                     -----    -----
+  +--> ?PR?_LCD_COMMAND?LCD
+
+?PR?_RTC_WRITETIMEDATE?RTC           000FH    0004H
+  +--> ?PR?_SEND_BYTE?RTC
+
+?PR?_RTC_READTIMEDATE?RTC            000FH    0004H
+  +--> ?PR?_SEND_BYTE?RTC
+  +--> ?PR?RECEIVE_BYTE?RTC
+
+?PR?_LCD_DISPLAYTIMEDATE?LCD         -----    -----
+  +--> ?PR?_LCD_COMMAND?LCD
+  +--> ?PR?_LCD_DATA?LCD
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\task_16_rtc (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:0ABDH         SEGMENT       ?C_C51STARTUP
+  I:0013H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:0AC0H         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:0ABDH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:0ABDH         LINE#         133
+  C:0ABFH         LINE#         134
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  08/21/2024  12:23:02  PAGE 3
+
+
+  C:0AC0H         LINE#         135
+  C:0AC1H         LINE#         136
+  C:0AC3H         LINE#         185
+  C:0AC6H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:09D8H         PUBLIC        main
+  C:0AD4H         SYMBOL        _?ix1000
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        timeDate
+  -------         ENDDO         
+  C:09D8H         LINE#         4
+  C:09D8H         LINE#         5
+  C:09EBH         LINE#         7
+  C:09EEH         LINE#         8
+  C:09F1H         LINE#         11
+  C:09FAH         LINE#         14
+  C:0A03H         LINE#         17
+  C:0A0CH         LINE#         19
+  C:0A0CH         LINE#         21
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        RTC
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0AAAH         PUBLIC        _Send_Byte
+  D:00B0H         PUBLIC        P3
+  B:00B0H.5       PUBLIC        CE
+  B:00B0H.4       PUBLIC        IO
+  B:00B0H.6       PUBLIC        SCLK
+  C:0A6CH         PUBLIC        Receive_Byte
+  C:0A3DH         PUBLIC        _RTC_ReadTimeDate
+  C:0ADBH         PUBLIC        RTC_Init
+  C:0A0EH         PUBLIC        _RTC_WriteTimeDate
+  -------         PROC          RTC_INIT
+  C:0ADBH         LINE#         3
+  C:0ADBH         LINE#         4
+  C:0ADDH         LINE#         5
+  C:0ADFH         LINE#         6
+  -------         ENDPROC       RTC_INIT
+  -------         PROC          _RTC_WRITETIMEDATE
+  D:000FH         SYMBOL        timeDate
+  -------         DO            
+  D:0012H         SYMBOL        i
+  -------         ENDDO         
+  C:0A0EH         LINE#         8
+  C:0A14H         LINE#         10
+  C:0A16H         LINE#         11
+  C:0A1BH         LINE#         13
+  C:0A1EH         LINE#         14
+  C:0A31H         LINE#         15
+  C:0A3AH         LINE#         17
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  08/21/2024  12:23:02  PAGE 4
+
+
+  C:0A3CH         LINE#         18
+  -------         ENDPROC       _RTC_WRITETIMEDATE
+  -------         PROC          _RTC_READTIMEDATE
+  D:000FH         SYMBOL        timeDate
+  -------         DO            
+  D:0012H         SYMBOL        i
+  -------         ENDDO         
+  C:0A3DH         LINE#         20
+  C:0A43H         LINE#         22
+  C:0A45H         LINE#         23
+  C:0A4AH         LINE#         25
+  C:0A4DH         LINE#         26
+  C:0A60H         LINE#         27
+  C:0A69H         LINE#         29
+  C:0A6BH         LINE#         30
+  -------         ENDPROC       _RTC_READTIMEDATE
+  -------         PROC          _SEND_BYTE
+  D:0007H         SYMBOL        byte
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0AAAH         LINE#         32
+  C:0AAAH         LINE#         34
+  C:0AACH         LINE#         35
+  C:0AB0H         LINE#         36
+  C:0AB2H         LINE#         37
+  C:0AB6H         LINE#         38
+  C:0AB8H         LINE#         39
+  C:0ABCH         LINE#         40
+  -------         ENDPROC       _SEND_BYTE
+  -------         PROC          RECEIVE_BYTE
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0007H         SYMBOL        receivedData
+  -------         ENDDO         
+  C:0A6CH         LINE#         42
+  C:0A6CH         LINE#         43
+  C:0A6EH         LINE#         45
+  C:0A6FH         LINE#         46
+  C:0A73H         LINE#         47
+  C:0A79H         LINE#         48
+  C:0A7BH         LINE#         49
+  C:0A7DH         LINE#         50
+  C:0A81H         LINE#         52
+  C:0A81H         LINE#         53
+  -------         ENDPROC       RECEIVE_BYTE
+  -------         ENDMOD        RTC
+
+  -------         MODULE        LCD
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  B:00A0H.7       PUBLIC        EN
+  C:095EH         PUBLIC        _LCD_DisplayTimeDate
+  B:00A0H.6       PUBLIC        RS
+  B:00A0H.5       PUBLIC        RW
+  C:0A9FH         PUBLIC        _LCD_Data
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  08/21/2024  12:23:02  PAGE 5
+
+
+  C:0A82H         PUBLIC        LCD_Init
+  C:0AC9H         PUBLIC        _LCD_Command
+  -------         PROC          LCD_INIT
+  C:0A82H         LINE#         3
+  C:0A82H         LINE#         4
+  C:0A87H         LINE#         5
+  C:0A8CH         LINE#         6
+  C:0A91H         LINE#         7
+  -------         ENDPROC       LCD_INIT
+  -------         PROC          _LCD_COMMAND
+  D:0007H         SYMBOL        cmd
+  C:0AC9H         LINE#         10
+  C:0AC9H         LINE#         11
+  C:0ACBH         LINE#         12
+  C:0ACDH         LINE#         13
+  C:0ACFH         LINE#         14
+  C:0AD1H         LINE#         15
+  C:0AD3H         LINE#         16
+  -------         ENDPROC       _LCD_COMMAND
+  C:0A96H         SYMBOL        L?0006
+  C:0A99H         SYMBOL        L?0007
+  C:0A9AH         SYMBOL        L?0008
+  -------         PROC          L?0005
+  -------         ENDPROC       L?0005
+  C:0A96H         SYMBOL        L?0006
+  C:0A99H         SYMBOL        L?0007
+  C:0A9AH         SYMBOL        L?0008
+  -------         PROC          _LCD_DATA
+  D:0007H         SYMBOL        dat
+  C:0A9FH         LINE#         18
+  C:0A9FH         LINE#         19
+  C:0AA1H         LINE#         20
+  C:0AA3H         LINE#         21
+  C:0AA5H         LINE#         22
+  C:0AA7H         LINE#         23
+  C:0AA9H         LINE#         24
+  -------         ENDPROC       _LCD_DATA
+  -------         PROC          _LCD_DISPLAYTIMEDATE
+  D:0001H         SYMBOL        timeDate
+  C:095EH         LINE#         26
+  C:095EH         LINE#         28
+  C:0963H         LINE#         29
+  C:0969H         LINE#         30
+  C:0972H         LINE#         31
+  C:0977H         LINE#         32
+  C:097DH         LINE#         33
+  C:0986H         LINE#         34
+  C:098BH         LINE#         35
+  C:0991H         LINE#         36
+  C:0997H         LINE#         39
+  C:099CH         LINE#         40
+  C:09A2H         LINE#         41
+  C:09ABH         LINE#         42
+  C:09B0H         LINE#         43
+  C:09B6H         LINE#         44
+  C:09BFH         LINE#         45
+  C:09C4H         LINE#         46
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  08/21/2024  12:23:02  PAGE 6
+
+
+  C:09CAH         LINE#         47
+  -------         ENDPROC       _LCD_DISPLAYTIMEDATE
+  -------         ENDMOD        LCD
+
+  -------         MODULE        ?C?COPY
+  C:08D0H         PUBLIC        ?C?COPY
+  -------         ENDMOD        ?C?COPY
+
+  -------         MODULE        ?C?CLDPTR
+  C:08F6H         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        ?C?CLDOPTR
+  C:090FH         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+  -------         MODULE        ?C?CSTOPTR
+  C:093CH         PUBLIC        ?C?CSTOPTR
+  -------         ENDMOD        ?C?CSTOPTR
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0185H BYTE (18%) *
+******************************************************************************
+
+Program Size: data=20.0 xdata=0 code=739
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

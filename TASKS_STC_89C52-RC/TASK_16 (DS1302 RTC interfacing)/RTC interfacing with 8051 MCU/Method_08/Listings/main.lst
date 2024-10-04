@@ -1,0 +1,786 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          
+   2          ////        #include <reg52.h>
+   3          ////        #include <intrins.h>
+   4          
+   5          ////        sbit SCLK = P3^6; // Serial Clock
+   6          ////        sbit IO = P3^4;   // Data I/O
+   7          ////        sbit CE = P3^5;   // Chip Enable
+   8          
+   9          ////        sbit RS = P2^6;
+  10          ////        sbit RW = P2^5;
+  11          ////        sbit EN = P2^7;
+  12          
+  13          ////        unsigned char sec;
+  14          ////          
+  15          
+  16          
+  17          ////        void delay(unsigned int ms) {
+  18          ////            while(ms--) _nop_();
+  19          ////        }
+  20          
+  21          ////        void LCD_Command(unsigned char command) {
+  22          ////            RS = 0; 
+  23          ////            RW = 0; 
+  24          ////            P0 = command;
+  25          ////            EN = 1;
+  26          ////            delay(5);
+  27          ////            EN = 0;
+  28          ////        }
+  29          
+  30          ////        void LCD_Init() {
+  31          ////            LCD_Command(0x38);  // 8-bit mode, 2 lines
+  32          ////            LCD_Command(0x0C);  // Display on, cursor off
+  33          ////            LCD_Command(0x06);  // Increment cursor
+  34          ////            LCD_Command(0x01);  // Clear display
+  35          ////        }
+  36          
+  37          ////        void LCD_WriteChar(char c) {
+  38          ////            RS = 1;
+  39          ////            RW = 0;
+  40          ////            P0 = c;
+  41          ////            EN = 1;
+  42          ////            delay(5);
+  43          ////            EN = 0;
+  44          ////        }
+  45          
+  46          ////        void LCD_WriteString(char *str) {
+  47          ////            while(*str) {
+  48          ////                LCD_WriteChar(*str++);
+  49          ////            }
+  50          ////        }
+  51          
+  52          
+  53          
+  54          
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 2   
+
+  55          ////        // -----------------------------------------------------------------------------------------------
+             -----------------------------------
+  56          
+  57          
+  58          ////        void DS1302_Init() {
+  59          ////            CE = 0;  // Disable DS1302
+  60          ////            SCLK = 0;  // Initialize clock line
+  61          ////        }
+  62          
+  63          
+  64          
+  65          ////        void DS1302_WriteByte(unsigned char dat) {
+  66          ////          unsigned char i;
+  67          ////            for (i = 0; i < 8; i++) {
+  68          ////                IO = dat & 0x01;
+  69          ////                SCLK = 1;
+  70          ////                dat >>= 1;
+  71          ////                SCLK = 0;
+  72          ////            }
+  73          ////        }
+  74          
+  75          
+  76          ////        unsigned char DS1302_ReadByte() {
+  77          ////            unsigned char dat = 0;
+  78          ////            unsigned char i;
+  79          ////          
+  80          ////            for (i = 0; i < 8; i++) {
+  81          ////                dat >>= 1;
+  82          ////                if (IO) dat |= 0x80;
+  83          ////                SCLK = 1;
+  84          ////                SCLK = 0;
+  85          ////            }
+  86          ////            return dat;
+  87          ////        }
+  88          
+  89          
+  90          
+  91          ////        void DS1302_WriteTime(unsigned char address, unsigned char dataa) {
+  92          ////            CE = 1;  // Enable DS1302
+  93          ////            DS1302_WriteByte(address);  // Send address
+  94          ////            DS1302_WriteByte(dataa);  // Send data
+  95          ////            CE = 0;  // Disable DS1302
+  96          ////        }
+  97          
+  98          
+  99          
+ 100          ////        unsigned char DS1302_ReadTime(unsigned char address) {
+ 101          ////            unsigned char dataa;
+ 102          ////            CE = 1;  // Enable DS1302
+ 103          ////            DS1302_WriteByte(address | 0x01);  // Send address with read command
+ 104          ////            dataa = DS1302_ReadByte();  // Read data
+ 105          ////            CE = 0;// Disable DS1302
+ 106          ////            return dataa;
+ 107          ////        }
+ 108          
+ 109          
+ 110          ////        void Display_Time(unsigned char hour, unsigned char min, unsigned char sec) {
+ 111          ////            char time[9];
+ 112          ////            time[0] = (hour / 10) + '0';
+ 113          ////            time[1] = (hour % 10) + '0';
+ 114          ////            time[2] = ':';
+ 115          ////            time[3] = (min / 10) + '0';
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 3   
+
+ 116          ////            time[4] = (min % 10) + '0';
+ 117          ////            time[5] = ':';
+ 118          ////            time[6] = (sec / 10) + '0';
+ 119          ////            time[7] = (sec % 10) + '0';
+ 120          ////            time[8] = '\0';
+ 121          ////            
+ 122          ////            LCD_Command(0x80);  // Move cursor to the start of the first line
+ 123          ////            LCD_WriteString(time);
+ 124          ////        }
+ 125          
+ 126          
+ 127          ////        ////void main() {
+ 128          ////        ////    
+ 129          ////        ////    DS1302_Init();
+ 130          ////        ////    DS1302_WriteTime(0x80, 0x50);  // Write seconds (example)
+ 131          ////        ////    sec = DS1302_ReadTime(0x81);  // Read seconds
+ 132          ////        ////    // Further processing and display
+ 133          ////        ////}
+ 134          
+ 135          
+ 136          
+ 137          
+ 138          ////        void main() {
+ 139          ////            unsigned char sec, min, hour;
+ 140          ////            
+ 141          ////            DS1302_Init();
+ 142          ////            LCD_Init();
+ 143          ////            
+ 144          ////            while(1) {
+ 145          ////                sec = DS1302_ReadTime(0x81);  // Read seconds
+ 146          ////                min = DS1302_ReadTime(0x83);  // Read minutes
+ 147          ////                hour = DS1302_ReadTime(0x85);  // Read hours
+ 148          ////                
+ 149          ////                Display_Time(hour, min, sec);
+ 150          ////                
+ 151          ////                delay(1000);  // Delay for 1 second
+ 152          ////            }
+ 153          ////        }
+ 154          
+ 155          
+ 156          
+ 157          
+ 158          
+ 159          
+ 160          
+ 161          
+ 162          
+ 163          /*--------------------------------------------------------------------------------------------------------
+             --------------------------------------------------------------------------*/
+ 164          
+ 165          
+ 166          
+ 167          
+ 168          
+ 169          
+ 170          
+ 171          
+ 172          //    #include <reg52.h>
+ 173          //    #include <intrins.h>
+ 174          
+ 175          //    // Pin Definitions
+ 176          //    sbit SCLK = P3^6; // Serial Clock
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 4   
+
+ 177          //    sbit IO = P3^4;   // Data I/O
+ 178          //    sbit CE = P3^5;   // Chip Enable
+ 179          
+ 180          //    sbit RS = P2^6;    // LCD Register Select
+ 181          //    sbit RW = P2^5;    // LCD Read/Write
+ 182          //    sbit EN = P2^7;    // LCD Enable
+ 183          
+ 184          //    // Function Prototypes
+ 185          //    unsigned char BCD_to_BIN(unsigned char val);
+ 186          //    void delay_ms(unsigned int ms);
+ 187          //    void LCD_Command(unsigned char command);
+ 188          //    void LCD_Init(void);
+ 189          //    void LCD_WriteChar(char c);
+ 190          //    void LCD_WriteString(char *str);
+ 191          //    void DS1302_Init(void);
+ 192          //    void DS1302_WriteByte(unsigned char dat);
+ 193          //    unsigned char DS1302_ReadByte(void);
+ 194          //    void DS1302_WriteTime(unsigned char address, unsigned char dataa);
+ 195          //    unsigned char DS1302_ReadTime(unsigned char address);
+ 196          //    void Display_Time(unsigned char hour, unsigned char min, unsigned char sec);
+ 197          //    void Display_Date(unsigned char date, unsigned char month, unsigned char year);
+ 198          
+ 199          //    // Function to convert BCD to Binary
+ 200          //    unsigned char BCD_to_BIN(unsigned char val) {
+ 201          //        return ((val >> 4) * 10) + (val & 0x0F);
+ 202          //    }
+ 203          
+ 204          //    // Simple Delay Function (Approximate 1 ms per call)
+ 205          //    void delay_ms(unsigned int ms) {
+ 206          //        unsigned int i, j;
+ 207          //        for(i = 0; i < ms; i++)
+ 208          //            for(j = 0; j < 120; j++); // Adjust inner loop for accurate delay if necessary
+ 209          //    }
+ 210          
+ 211          //    // LCD Command Function
+ 212          //    void LCD_Command(unsigned char command) {
+ 213          //        RS = 0; 
+ 214          //        RW = 0; 
+ 215          //        P0 = command;
+ 216          //        EN = 1;
+ 217          //        delay_ms(1);
+ 218          //        EN = 0;
+ 219          //    }
+ 220          
+ 221          //    // Initialize LCD
+ 222          //    void LCD_Init(void) {
+ 223          //        LCD_Command(0x38);  // 8-bit mode, 2 lines, 5x7 dots
+ 224          //        LCD_Command(0x0C);  // Display ON, Cursor OFF
+ 225          //        LCD_Command(0x06);  // Entry mode: Increment cursor
+ 226          //        LCD_Command(0x01);  // Clear display
+ 227          //        delay_ms(2);
+ 228          //    }
+ 229          
+ 230          //    // Write Character to LCD
+ 231          //    void LCD_WriteChar(char c) {
+ 232          //        RS = 1;
+ 233          //        RW = 0;
+ 234          //        P0 = c;
+ 235          //        EN = 1;
+ 236          //        delay_ms(1);
+ 237          //        EN = 0;
+ 238          //    }
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 5   
+
+ 239          
+ 240          //    // Write String to LCD
+ 241          //    void LCD_WriteString(char *str) {
+ 242          //        while(*str) {
+ 243          //            LCD_WriteChar(*str++);
+ 244          //        }
+ 245          //    }
+ 246          
+ 247          //    // Initialize DS1302
+ 248          //    void DS1302_Init(void) {
+ 249          //        CE = 0;  // Disable DS1302
+ 250          //        SCLK = 0;  // Initialize clock line
+ 251          //        delay_ms(1);
+ 252          //        
+ 253          //        // Optionally, disable write protection by writing to control register (0x8E)
+ 254          //        DS1302_WriteTime(0x8E, 0x00); // Disable write protection
+ 255          //    }
+ 256          
+ 257          //    // Write Byte to DS1302
+ 258          //    void DS1302_WriteByte(unsigned char dat) {
+ 259          //        unsigned char i;
+ 260          //        for (i = 0; i < 8; i++) {
+ 261          //            IO = dat & 0x01;
+ 262          //            SCLK = 1;
+ 263          //            delay_ms(1);
+ 264          //            SCLK = 0;
+ 265          //            dat >>= 1;
+ 266          //        }
+ 267          //    }
+ 268          
+ 269          //    // Read Byte from DS1302
+ 270          //    unsigned char DS1302_ReadByte(void) {
+ 271          //        unsigned char dat = 0;
+ 272          //        unsigned char i;
+ 273          //        
+ 274          //        IO = 1; // Configure IO as input (open-drain high)
+ 275          //        for (i = 0; i < 8; i++) {
+ 276          //            dat >>= 1;
+ 277          //            if (IO) dat |= 0x80;
+ 278          //            SCLK = 1;
+ 279          //            delay_ms(1);
+ 280          //            SCLK = 0;
+ 281          //        }
+ 282          //        return dat;
+ 283          //    }
+ 284          
+ 285          //    // Write Time/Date to DS1302
+ 286          //    void DS1302_WriteTime(unsigned char address, unsigned char dataa) {
+ 287          //        CE = 1;  // Enable DS1302
+ 288          //        delay_ms(1);
+ 289          //        DS1302_WriteByte(address);  // Send address
+ 290          //        DS1302_WriteByte(dataa);    // Send data
+ 291          //        CE = 0;  // Disable DS1302
+ 292          //        delay_ms(1);
+ 293          //    }
+ 294          
+ 295          //    // Read Time/Date from DS1302
+ 296          //    unsigned char DS1302_ReadTime(unsigned char address) {
+ 297          //        unsigned char dataa;
+ 298          //        CE = 1;  // Enable DS1302
+ 299          //        delay_ms(1);
+ 300          //        DS1302_WriteByte(address | 0x01);  // Send address with read command
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 6   
+
+ 301          //        dataa = DS1302_ReadByte();         // Read data
+ 302          //        CE = 0;  // Disable DS1302
+ 303          //        delay_ms(1);
+ 304          //        return dataa;
+ 305          //    }
+ 306          
+ 307          //    // Display Time on LCD
+ 308          //    void Display_Time(unsigned char hour, unsigned char min, unsigned char sec) {
+ 309          //        char timeStr[17];
+ 310          //        unsigned char index = 0;
+ 311          //        
+ 312          //        // Format: "Time: hh:mm:ss"
+ 313          //        timeStr[index++] = 'T';
+ 314          //        timeStr[index++] = 'i';
+ 315          //        timeStr[index++] = 'm';
+ 316          //        timeStr[index++] = 'e';
+ 317          //        timeStr[index++] = ':';
+ 318          //        timeStr[index++] = ' ';
+ 319          //        timeStr[index++] = (hour / 10) + '0';
+ 320          //        timeStr[index++] = (hour % 10) + '0';
+ 321          //        timeStr[index++] = ':';
+ 322          //        timeStr[index++] = (min / 10) + '0';
+ 323          //        timeStr[index++] = (min % 10) + '0';
+ 324          //        timeStr[index++] = ':';
+ 325          //        timeStr[index++] = (sec / 10) + '0';
+ 326          //        timeStr[index++] = (sec % 10) + '0';
+ 327          //        timeStr[index++] = ' ';
+ 328          //        timeStr[index++] = ' ';
+ 329          //        timeStr[index] = '\0';
+ 330          //        
+ 331          //        LCD_Command(0x80);  // Move cursor to the first line
+ 332          //        LCD_WriteString(timeStr);
+ 333          //    }
+ 334          
+ 335          //    // Display Date on LCD
+ 336          //    void Display_Date(unsigned char date, unsigned char month, unsigned char year) {
+ 337          //        char dateStr[17];
+ 338          //        unsigned char index = 0;
+ 339          //        
+ 340          //        // Format: "Date: dd/mm/yy"
+ 341          //        dateStr[index++] = 'D';
+ 342          //        dateStr[index++] = 'a';
+ 343          //        dateStr[index++] = 't';
+ 344          //        dateStr[index++] = 'e';
+ 345          //        dateStr[index++] = ':';
+ 346          //        dateStr[index++] = ' ';
+ 347          //        dateStr[index++] = (date / 10) + '0';
+ 348          //        dateStr[index++] = (date % 10) + '0';
+ 349          //        dateStr[index++] = '/';
+ 350          //        dateStr[index++] = (month / 10) + '0';
+ 351          //        dateStr[index++] = (month % 10) + '0';
+ 352          //        dateStr[index++] = '/';
+ 353          //        dateStr[index++] = (year / 10) + '0';
+ 354          //        dateStr[index++] = (year % 10) + '0';
+ 355          //        dateStr[index++] = ' ';
+ 356          //        dateStr[index++] = ' ';
+ 357          //        dateStr[index] = '\0';
+ 358          //        
+ 359          //        LCD_Command(0xC0);  // Move cursor to the second line
+ 360          //        LCD_WriteString(dateStr);
+ 361          //    }
+ 362          
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 7   
+
+ 363          //    void main(void) {
+ 364          //        unsigned char sec_bcd, min_bcd, hour_bcd;
+ 365          //        unsigned char date_bcd, month_bcd, year_bcd;
+ 366          //        unsigned char sec, min, hour;
+ 367          //        unsigned char date, month, year;
+ 368          //        
+ 369          //        DS1302_Init();
+ 370          //        LCD_Init();
+ 371          //        
+ 372          //        while(1) {
+ 373          //            // Read BCD values from DS1302
+ 374          //            sec_bcd   = DS1302_ReadTime(0x81);  // Seconds
+ 375          //            min_bcd   = DS1302_ReadTime(0x83);  // Minutes
+ 376          //            hour_bcd  = DS1302_ReadTime(0x85);  // Hours
+ 377          //            date_bcd  = DS1302_ReadTime(0x87);  // Date (Day of Month)
+ 378          //            month_bcd = DS1302_ReadTime(0x89);  // Month
+ 379          //            year_bcd  = DS1302_ReadTime(0x8D);  // Year
+ 380          //            
+ 381          //            // Convert BCD to Binary
+ 382          //            sec   = BCD_to_BIN(sec_bcd);
+ 383          //            min   = BCD_to_BIN(min_bcd);
+ 384          //            hour  = BCD_to_BIN(hour_bcd);
+ 385          //            date  = BCD_to_BIN(date_bcd);
+ 386          //            month = BCD_to_BIN(month_bcd);
+ 387          //            year  = BCD_to_BIN(year_bcd);
+ 388          //            
+ 389          //            // Display Time and Date
+ 390          //            Display_Time(hour, min, sec);
+ 391          //            Display_Date(date, month, year);
+ 392          //            
+ 393          //            delay_ms(1000);  // Wait for 1 second
+ 394          //        }
+ 395          //    }
+ 396          
+ 397          
+ 398          
+ 399          
+ 400          
+ 401          
+ 402          
+ 403          
+ 404          // _______________________________________________________________________________________________________
+             -________________________________________________________________
+ 405          
+ 406          
+ 407          #include <reg52.h>
+ 408          #include <intrins.h>
+ 409          
+ 410          sbit SCLK = P3^6; // Serial Clock
+ 411          sbit IO = P3^4;   // Data I/O
+ 412          sbit CE = P3^5;   // Chip Enable
+ 413          
+ 414          sbit RS = P2^6;
+ 415          sbit RW = P2^5;
+ 416          sbit EN = P2^7;
+ 417          
+ 418          void delay() {
+ 419   1          unsigned int i;
+ 420   1          for(i=0; i<1000; i++) {  // 1ms * 1000 = 1s
+ 421   2              TH0 = 0xFC;          // Load initial value for 1ms delay
+ 422   2              TL0 = 0x66;
+ 423   2              TR0 = 1;             // Start Timer0
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 8   
+
+ 424   2              while(!TF0);         // Wait for Timer0 to overflow
+ 425   2              TR0 = 0;             // Stop Timer0
+ 426   2              TF0 = 0;             // Clear Timer0 overflow flag
+ 427   2          }
+ 428   1      }
+ 429          
+ 430          void LCD_Command(unsigned char command) {
+ 431   1          RS = 0; 
+ 432   1          RW = 0; 
+ 433   1          P0 = command;
+ 434   1          EN = 1;
+ 435   1          delay();
+ 436   1          EN = 0;
+ 437   1      }
+ 438          
+ 439          void LCD_Init() {
+ 440   1          LCD_Command(0x38);  // 8-bit mode, 2 lines
+ 441   1          LCD_Command(0x0C);  // Display on, cursor off
+ 442   1          LCD_Command(0x06);  // Increment cursor
+ 443   1          LCD_Command(0x01);  // Clear display
+ 444   1      }
+ 445          
+ 446          void LCD_WriteChar(char c) {
+ 447   1          RS = 1;
+ 448   1          RW = 0;
+ 449   1          P0 = c;
+ 450   1          EN = 1;
+ 451   1          delay();
+ 452   1          EN = 0;
+ 453   1      }
+ 454          
+ 455          void LCD_WriteString(char *str) {
+ 456   1          while(*str) {
+ 457   2              LCD_WriteChar(*str++);
+ 458   2          }
+ 459   1      }
+ 460          
+ 461          void DS1302_Init() {
+ 462   1          CE = 0;  // Disable DS1302
+ 463   1          SCLK = 0;  // Initialize clock line
+ 464   1      }
+ 465          
+ 466          void DS1302_WriteByte(unsigned char dat) {
+ 467   1          unsigned char i;
+ 468   1          for (i = 0; i < 8; i++) {
+ 469   2              IO = dat & 0x01;
+ 470   2              SCLK = 1;
+ 471   2              dat >>= 1;
+ 472   2              SCLK = 0;
+ 473   2          }
+ 474   1      }
+ 475          
+ 476          unsigned char DS1302_ReadByte() {
+ 477   1          unsigned char dat = 0;
+ 478   1          unsigned char i;
+ 479   1          
+ 480   1          for (i = 0; i < 8; i++) {
+ 481   2              dat >>= 1;
+ 482   2              if (IO) dat |= 0x80;
+ 483   2              SCLK = 1;
+ 484   2              SCLK = 0;
+ 485   2          }
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 9   
+
+ 486   1          return dat;
+ 487   1      }
+ 488          
+ 489          void DS1302_WriteTime(unsigned char address, unsigned char dataa) {
+ 490   1          CE = 1;  // Enable DS1302
+ 491   1          DS1302_WriteByte(address);  // Send address
+ 492   1          DS1302_WriteByte(dataa);  // Send data
+ 493   1          CE = 0;  // Disable DS1302
+ 494   1      }
+ 495          
+ 496          unsigned char DS1302_ReadTime(unsigned char address) {
+ 497   1          unsigned char dataa;
+ 498   1          CE = 1;  // Enable DS1302
+ 499   1          DS1302_WriteByte(address | 0x01);  // Send address with read command
+ 500   1          dataa = DS1302_ReadByte();  // Read data
+ 501   1          CE = 0;  // Disable DS1302
+ 502   1          return dataa;
+ 503   1      }
+ 504          
+ 505          void Display_Date(unsigned char day, unsigned char month, unsigned char year) {
+ 506   1          char date[11];
+ 507   1          date[0] = (day / 10) + '0';
+ 508   1          date[1] = (day % 10) + '0';
+ 509   1          date[2] = '/';
+ 510   1          date[3] = (month / 10) + '0';
+ 511   1          date[4] = (month % 10) + '0';
+ 512   1          date[5] = '/';
+ 513   1          date[6] = '2';
+ 514   1          date[7] = '0';
+ 515   1          date[8] = (year / 10) + '0';
+ 516   1          date[9] = (year % 10) + '0';
+ 517   1          date[10] = '\0';
+ 518   1          
+ 519   1          LCD_Command(0x80);  // Move cursor to the start of the first line
+ 520   1          LCD_WriteString("Date: ");
+ 521   1          LCD_WriteString(date);
+ 522   1      }
+ 523          
+ 524          void Display_Time(unsigned char hour, unsigned char min, unsigned char sec) {
+ 525   1          char time[9];
+ 526   1          time[0] = (hour / 10) + '0';
+ 527   1          time[1] = (hour % 10) + '0';
+ 528   1          time[2] = ':';
+ 529   1          time[3] = (min / 10) + '0';
+ 530   1          time[4] = (min % 10) + '0';
+ 531   1          time[5] = ':';
+ 532   1          time[6] = (sec / 10) + '0';
+ 533   1          time[7] = (sec % 10) + '0';
+ 534   1          time[8] = '\0';
+ 535   1          
+ 536   1          LCD_Command(0xC0);  // Move cursor to the start of the second line
+ 537   1          LCD_WriteString("Time: ");
+ 538   1          LCD_WriteString(time);
+ 539   1      }
+ 540          
+ 541          void main() {
+ 542   1          unsigned char sec, min, hour, day, month, year;
+ 543   1          
+ 544   1          DS1302_Init();
+ 545   1          LCD_Init();
+ 546   1          
+ 547   1          while(1) {
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 10  
+
+ 548   2              sec = DS1302_ReadTime(0x81);  // Read seconds
+ 549   2              min = DS1302_ReadTime(0x83);  // Read minutes
+ 550   2              hour = DS1302_ReadTime(0x85);  // Read hours
+ 551   2              day = DS1302_ReadTime(0x87);  // Read day
+ 552   2              month = DS1302_ReadTime(0x89);  // Read month
+ 553   2              year = DS1302_ReadTime(0x8C);  // Read year
+ 554   2              
+ 555   2              Display_Date(day, month, year);  // Display the date
+ 556   2              Display_Time(hour, min, sec);  // Display the time
+ 557   2              
+ 558   2              delay();  // Delay for 1 second
+ 559   2          }
+ 560   1      }
+ 561          
+ 562          
+ 563          
+ 564          
+ 565          
+ 566          
+ 567          
+ 568          
+ 569          
+ 570          
+ 571          
+ 572          
+ 573          
+ 574          
+ 575          
+ 576          
+ 577          
+ 578          
+ 579          
+ 580          
+ 581          
+ 582          ////#include <reg52.h>
+ 583          ////#include <intrins.h>
+ 584          
+ 585          ////sbit SCLK = P3^6; // Serial Clock
+ 586          ////sbit IO = P3^4;   // Data I/O
+ 587          ////sbit CE = P3^5;   // Chip Enable
+ 588          
+ 589          ////sbit RS = P2^6;
+ 590          ////sbit RW = P2^5;
+ 591          ////sbit EN = P2^7;
+ 592          
+ 593          ////void Timer0_Delay1s() {
+ 594          ////    unsigned int i;
+ 595          ////    for(i=0; i<1000; i++) {  // 1ms * 1000 = 1s
+ 596          ////        TH0 = 0xFC;          // Load initial value for 1ms delay
+ 597          ////        TL0 = 0x66;
+ 598          ////        TR0 = 1;             // Start Timer0
+ 599          ////        while(!TF0);         // Wait for Timer0 to overflow
+ 600          ////        TR0 = 0;             // Stop Timer0
+ 601          ////        TF0 = 0;             // Clear Timer0 overflow flag
+ 602          ////    }
+ 603          ////}
+ 604          
+ 605          ////void LCD_Command(unsigned char command) {
+ 606          ////    RS = 0; 
+ 607          ////    RW = 0; 
+ 608          ////    P0 = command;
+ 609          ////    EN = 1;
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 11  
+
+ 610          ////    EN = 0;
+ 611          ////    Timer0_Delay1s(); // Replace with appropriate short delay function
+ 612          ////}
+ 613          
+ 614          ////void LCD_Init() {
+ 615          ////    LCD_Command(0x38);  // 8-bit mode, 2 lines
+ 616          ////    LCD_Command(0x0C);  // Display on, cursor off
+ 617          ////    LCD_Command(0x06);  // Increment cursor
+ 618          ////    LCD_Command(0x01);  // Clear display
+ 619          ////}
+ 620          
+ 621          ////void LCD_WriteChar(char c) {
+ 622          ////    RS = 1;
+ 623          ////    RW = 0;
+ 624          ////    P0 = c;
+ 625          ////    EN = 1;
+ 626          ////    EN = 0;
+ 627          ////    Timer0_Delay1s(); // Replace with appropriate short delay function
+ 628          ////}
+ 629          
+ 630          ////void LCD_WriteString(char *str) {
+ 631          ////    while(*str) {
+ 632          ////        LCD_WriteChar(*str++);
+ 633          ////    }
+ 634          ////}
+ 635          
+ 636          ////void DS1302_Init() {
+ 637          ////    CE = 0;  // Disable DS1302
+ 638          ////    SCLK = 0;  // Initialize clock line
+ 639          ////}
+ 640          
+ 641          ////void DS1302_WriteByte(unsigned char dat) {
+ 642          ////    unsigned char i;
+ 643          ////    for (i = 0; i < 8; i++) {
+ 644          ////        IO = dat & 0x01;
+ 645          ////        SCLK = 1;
+ 646          ////        dat >>= 1;
+ 647          ////        SCLK = 0;
+ 648          ////    }
+ 649          ////}
+ 650          
+ 651          ////unsigned char DS1302_ReadByte() {
+ 652          ////    unsigned char dat = 0;
+ 653          ////    unsigned char i;
+ 654          ////    
+ 655          ////    for (i = 0; i < 8; i++) {
+ 656          ////        dat >>= 1;
+ 657          ////        if (IO) dat |= 0x80;
+ 658          ////        SCLK = 1;
+ 659          ////        SCLK = 0;
+ 660          ////    }
+ 661          ////    return dat;
+ 662          ////}
+ 663          
+ 664          ////void DS1302_WriteTime(unsigned char address, unsigned char dataa) {
+ 665          ////    CE = 1;  // Enable DS1302
+ 666          ////    DS1302_WriteByte(address);  // Send address
+ 667          ////    DS1302_WriteByte(dataa);  // Send data
+ 668          ////    CE = 0;  // Disable DS1302
+ 669          ////}
+ 670          
+ 671          ////unsigned char DS1302_ReadTime(unsigned char address) {
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 12  
+
+ 672          ////    unsigned char dataa;
+ 673          ////    CE = 1;  // Enable DS1302
+ 674          ////    DS1302_WriteByte(address | 0x01);  // Send address with read command
+ 675          ////    dataa = DS1302_ReadByte();  // Read data
+ 676          ////    CE = 0;  // Disable DS1302
+ 677          ////    return dataa;
+ 678          ////}
+ 679          
+ 680          ////void Display_Date(unsigned char day, unsigned char month, unsigned char year) {
+ 681          ////    char date[11];
+ 682          ////    date[0] = (day / 10) + '0';
+ 683          ////    date[1] = (day % 10) + '0';
+ 684          ////    date[2] = '/';
+ 685          ////    date[3] = (month / 10) + '0';
+ 686          ////    date[4] = (month % 10) + '0';
+ 687          ////    date[5] = '/';
+ 688          ////    date[6] = '2';
+ 689          ////    date[7] = '0';
+ 690          ////    date[8] = (year / 10) + '0';
+ 691          ////    date[9] = (year % 10) + '0';
+ 692          ////    date[10] = '\0';
+ 693          ////    
+ 694          ////    LCD_Command(0x80);  // Move cursor to the start of the first line
+ 695          ////    LCD_WriteString("Date: ");
+ 696          ////    LCD_WriteString(date);
+ 697          ////}
+ 698          
+ 699          ////void Display_Time(unsigned char hour, unsigned char min, unsigned char sec) {
+ 700          ////    char time[9];
+ 701          ////    time[0] = (hour / 10) + '0';
+ 702          ////    time[1] = (hour % 10) + '0';
+ 703          ////    time[2] = ':';
+ 704          ////    time[3] = (min / 10) + '0';
+ 705          ////    time[4] = (min % 10) + '0';
+ 706          ////    time[5] = ':';
+ 707          ////    time[6] = (sec / 10) + '0';
+ 708          ////    time[7] = (sec % 10) + '0';
+ 709          ////    time[8] = '\0';
+ 710          ////    
+ 711          ////    LCD_Command(0xC0);  // Move cursor to the start of the second line
+ 712          ////    LCD_WriteString("Time: ");
+ 713          ////    LCD_WriteString(time);
+ 714          ////}
+ 715          
+ 716          ////void main() {
+ 717          ////    unsigned char sec, min, hour, day, month, year;
+ 718          ////    
+ 719          ////    DS1302_Init();
+ 720          ////    LCD_Init();
+ 721          ////    
+ 722          ////    while(1) {
+ 723          ////        sec = DS1302_ReadTime(0x81);  // Read seconds
+ 724          ////        min = DS1302_ReadTime(0x83);  // Read minutes
+ 725          ////        hour = DS1302_ReadTime(0x85);  // Read hours
+ 726          ////        day = DS1302_ReadTime(0x87);  // Read day
+ 727          ////        month = DS1302_ReadTime(0x89);  // Read month
+ 728          ////        year = DS1302_ReadTime(0x8C);  // Read year
+ 729          ////        
+ 730          ////        Display_Date(day, month, year);  // Display the date
+ 731          ////        Display_Time(hour, min, sec);  // Display the time
+ 732          ////        
+ 733          ////        Timer0_Delay1s();  // Delay for 1 second
+C51 COMPILER V9.60.7.0   MAIN                                                              08/26/2024 12:28:25 PAGE 13  
+
+ 734          ////    }
+ 735          ////}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    442    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      28
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

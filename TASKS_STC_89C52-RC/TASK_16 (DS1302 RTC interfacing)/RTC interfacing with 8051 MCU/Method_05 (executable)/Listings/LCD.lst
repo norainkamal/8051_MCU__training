@@ -1,0 +1,186 @@
+C51 COMPILER V9.60.7.0   LCD                                                               09/23/2024 11:25:50 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\LCD.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE LCD.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\LCD.l
+                    -st) TABS(2) OBJECT(.\Objects\LCD.obj)
+
+line level    source
+
+   1          
+   2          #include <reg51.h>         // Include the header file for the 8051 microcontroller
+   3          #include "LCD.h"           // Include the header file for the LCD functions
+   4          #include <string.h>        // Include the string library for string manipulation functions
+   5          
+   6          #define lcd_data P0        // Define the data bus for the LCD as port P0
+   7          
+   8          // Define the control pins for the LCD
+   9          sbit RW = P2^5;            // RW (Read/Write) pin connected to P2.5
+  10          sbit RS = P2^6;            // RS (Register Select) pin connected to P2.6
+  11          sbit EN = P2^7;            // EN (Enable) pin connected to P2.7
+  12          
+  13          // Function to initialize the LCD
+  14          void lcd_init() {
+  15   1          lcd_command(0x38);     // Set LCD to 2 lines, 5x7 matrix (Function Set)
+  16   1          lcd_command(0x0C);     // Display ON, Cursor OFF (Display Control)
+  17   1          lcd_command(0x01);     // Clear display screen (Clear Display)
+  18   1          lcd_command(0x80);     // Force cursor to the beginning of the first line (Set DDRAM address)
+  19   1      }
+  20          
+  21          // Function to send a command to the LCD
+  22          void lcd_command(unsigned char cmd) {
+  23   1          lcd_data = cmd;        // Load the command into the data bus
+  24   1          RW = 0;                // Set RW to 0 for write operation
+  25   1          RS = 0;                // Set RS to 0 to select the instruction register
+  26   1          EN = 1;                // Generate a high-to-low pulse on EN to latch the command
+  27   1          delay(1);              // Short delay for the command to be processed
+  28   1          EN = 0;                // Disable the enable pin
+  29   1          delay(2);              // Additional delay to ensure the command is executed
+  30   1      }
+  31          
+  32          // Function to display a single character on the LCD
+  33          void lcd_char(unsigned char dat) {
+  34   1          lcd_data = dat;        // Load the data (character) into the data bus
+  35   1          RW = 0;                // Set RW to 0 for write operation
+  36   1          RS = 1;                // Set RS to 1 to select the data register
+  37   1          EN = 1;                // Generate a high-to-low pulse on EN to latch the data
+  38   1          delay(100);            // Short delay for the character to be displayed
+  39   1          EN = 0;                // Disable the enable pin
+  40   1          delay(200);            // Additional delay for the display to update
+  41   1      }
+  42          
+  43          // Function to display a string of characters on the LCD
+  44          void lcd_string(unsigned char *str) {
+  45   1          int i;
+  46   1          for(i = 0; str[i] != 0; i++) {  // Loop through each character in the string
+  47   2              lcd_char(str[i]);           // Display each character on the LCD
+  48   2          }
+  49   1      }
+  50          
+  51          // Function to set the cursor position on the LCD
+  52          void lcd_set_cursor(unsigned char row, unsigned char col) {
+  53   1          unsigned char position;
+  54   1          if(row == 0) {
+C51 COMPILER V9.60.7.0   LCD                                                               09/23/2024 11:25:50 PAGE 2   
+
+  55   2              position = 0x80 + col;      // Set cursor to the specified column on the first line
+  56   2          } else {
+  57   2              position = 0xC0 + col;      // Set cursor to the specified column on the second line
+  58   2          }
+  59   1          lcd_command(position);          // Send the position command to the LCD
+  60   1      }
+  61          
+  62          // Function to create a delay
+  63          void delay(unsigned int time) {
+  64   1          unsigned int i, j;
+  65   1          for(i = 0; i < time; i++)       // Outer loop for the delay
+  66   1              for(j = 0; j < 120; j++);   // Inner loop for the delay (adjustable for timing)
+  67   1      }
+  68          
+  69          
+  70          
+  71          
+  72          
+  73          
+  74          
+  75          
+  76          
+  77          
+  78          
+  79          
+  80          
+  81          
+  82          
+  83          
+  84          
+  85          
+  86          
+  87          
+  88          
+  89          //    #include <reg51.h>
+  90          //    #include "LCD.h"
+  91          //    #include <string.h>
+  92          
+  93          
+  94          //    #define lcd_data P0
+  95          //    sbit RW=P2^5;
+  96          //    sbit RS=P2^6;
+  97          //    sbit EN=P2^7;
+  98          
+  99          //    void lcd_init()
+ 100          //    {
+ 101          //      lcd_command(0x38);
+ 102          //      lcd_command(0x0C);
+ 103          //      lcd_command(0x01);
+ 104          //      lcd_command(0x80);
+ 105          //    }
+ 106          
+ 107          //    void lcd_command(unsigned char cmd)
+ 108          //    {
+ 109          //      lcd_data=cmd;
+ 110          //      RW=0;
+ 111          //      RS=0;
+ 112          //      EN=1;
+ 113          //      delay(1);
+ 114          //      EN=0;
+ 115          //      delay(2);
+ 116          //    }
+C51 COMPILER V9.60.7.0   LCD                                                               09/23/2024 11:25:50 PAGE 3   
+
+ 117          //    void lcd_char(unsigned char dat)
+ 118          //    {
+ 119          //      lcd_data=dat;
+ 120          //      RW=0;
+ 121          //      RS=1;
+ 122          //      EN=1;
+ 123          //      delay(100);
+ 124          //      EN=0;
+ 125          //      delay(200);
+ 126          //    }
+ 127          //    void lcd_string(unsigned char *str)
+ 128          //    {
+ 129          //      int i;
+ 130          //      for(i=0; str[i]!=0; i++)
+ 131          //      {
+ 132          //        lcd_char(str[i]);
+ 133          //      }
+ 134          //      
+ 135          //    }
+ 136          //    void lcd_set_cursor(unsigned char row, unsigned char col)
+ 137          //    {
+ 138          //      unsigned char position;
+ 139          //      if(row==0)
+ 140          //      {
+ 141          //        position=0x80+col;
+ 142          //      }
+ 143          //      else
+ 144          //      {
+ 145          //        position=0xC0+col;
+ 146          //      }
+ 147          //      lcd_command(position);
+ 148          //    }
+ 149          
+ 150          //    void delay (unsigned int time)
+ 151          //    {
+ 152          //      unsigned int i,j;
+ 153          //      for(i=0; i<time; i++)
+ 154          //      for(j=0; j<120; j++);
+ 155          //    }
+ 156          
+ 157          
+ 158          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    163    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

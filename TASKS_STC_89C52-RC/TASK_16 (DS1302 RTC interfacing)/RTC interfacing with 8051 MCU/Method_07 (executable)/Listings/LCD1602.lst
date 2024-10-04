@@ -1,0 +1,267 @@
+C51 COMPILER V9.60.7.0   LCD1602                                                           09/23/2024 11:36:20 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD1602
+OBJECT MODULE PLACED IN .\Objects\LCD1602.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE LCD1602.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\L
+                    -CD1602.lst) TABS(2) OBJECT(.\Objects\LCD1602.obj)
+
+line level    source
+
+   1          #include <reg52.h>  // Include the header file for the 8051 microcontroller
+   2          
+   3          // Define pins for the LCD control lines using sbit (bit-addressable) notation
+   4          sbit LCD_RS = P2^6;  // Register Select pin: High for data, Low for command
+   5          sbit LCD_RW = P2^5;  // Read/Write pin: High for read, Low for write
+   6          sbit LCD_EN = P2^7;  // Enable pin: Used to latch data into the LCD
+   7          
+   8          // Define the data port for the LCD
+   9          #define LCD_DataPort P0  // LCD data lines are connected to Port 0 of the microcontroller
+  10          
+  11          /**
+  12           * @brief Delays the execution to allow the LCD to process commands or data
+  13           * @param None
+  14           * @retval None
+  15           */
+  16          void LCD_Delay() {
+  17   1        unsigned char i, j;  // Declare two loop counter variables
+  18   1      
+  19   1        i = 2;  // Initialize the outer loop counter
+  20   1        j = 239;  // Initialize the inner loop counter
+  21   1      
+  22   1        do {  // Outer loop
+  23   2          while (--j);  // Inner loop: Decrement j until it reaches 0
+  24   2        } while (--i);  // Decrement i and repeat the outer loop until i reaches 0
+  25   1      }
+  26          
+  27          /**
+  28           * @brief Sends a command to the LCD
+  29           * @param Command: The command byte to be sent to the LCD
+  30           * @retval None
+  31           */
+  32          void LCD_WriteCommand(unsigned char Command) {
+  33   1        LCD_RS = 0;  // Set RS to 0 to indicate command mode
+  34   1        LCD_RW = 0;  // Set RW to 0 to indicate write operation
+  35   1        LCD_DataPort = Command;  // Place the command byte on the data port
+  36   1        LCD_EN = 1;  // Enable the LCD to latch the command
+  37   1        LCD_Delay();  // Wait for the LCD to process the command
+  38   1        LCD_EN = 0;  // Disable the LCD
+  39   1        LCD_Delay();  // Wait before sending the next command or data
+  40   1      }
+  41          
+  42          /**
+  43           * @brief Sends data to the LCD
+  44           * @param Data: The data byte to be sent to the LCD
+  45           * @retval None
+  46           */
+  47          void LCD_WriteData(unsigned char Data) {
+  48   1        LCD_RS = 1;  // Set RS to 1 to indicate data mode
+  49   1        LCD_RW = 0;  // Set RW to 0 to indicate write operation
+  50   1        LCD_DataPort = Data;  // Place the data byte on the data port
+  51   1        LCD_EN = 1;  // Enable the LCD to latch the data
+  52   1        LCD_Delay();  // Wait for the LCD to process the data
+  53   1        LCD_EN = 0;  // Disable the LCD
+  54   1        LCD_Delay();  // Wait before sending the next command or data
+C51 COMPILER V9.60.7.0   LCD1602                                                           09/23/2024 11:36:20 PAGE 2   
+
+  55   1      }
+  56          
+  57          /**
+  58           * @brief Sets the cursor position on the LCD
+  59           * @param Line: The line number (1 or 2)
+  60           * @param Column: The column number (1 to 16)
+  61           * @retval None
+  62           */
+  63          void LCD_SetCursor(unsigned char Line, unsigned char Column) {
+  64   1        if (Line == 1) {  // If the first line is selected
+  65   2          LCD_WriteCommand(0x80 | (Column - 1));  // Set cursor to the specified column on the first line
+  66   2        } else if (Line == 2) {  // If the second line is selected
+  67   2          LCD_WriteCommand(0x80 + (Column - 1 + 0x40));  // Set cursor to the specified column on the second lin
+             -e
+  68   2        }
+  69   1      }
+  70          
+  71          /**
+  72           * @brief Initializes the LCD
+  73           * @param None
+  74           * @retval None
+  75           */
+  76          void LCD_Init() {
+  77   1        LCD_WriteCommand(0x38);  // Function set: 8-bit, 2 line, 5x7 dots
+  78   1        LCD_WriteCommand(0x0c);  // Display ON, cursor OFF
+  79   1        LCD_WriteCommand(0x06);  // Entry mode: Increment cursor, no shift
+  80   1        LCD_WriteCommand(0x01);  // Clear display
+  81   1      }
+  82          
+  83          /**
+  84           * @brief Displays a single character at the specified position
+  85           * @param Line: The line number (1 or 2)
+  86           * @param Column: The column number (1 to 16)
+  87           * @param Char: The character to display
+  88           * @retval None
+  89           */
+  90          void LCD_ShowChar(unsigned char Line, unsigned char Column, char Char) {
+  91   1        LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+  92   1        LCD_WriteData(Char);  // Write the character to the LCD
+  93   1      }
+  94          
+  95          /**
+  96           * @brief Displays a string starting from the specified position
+  97           * @param Line: The line number (1 or 2)
+  98           * @param Column: The column number (1 to 16)
+  99           * @param String: Pointer to the string to be displayed
+ 100           * @retval None
+ 101           */
+ 102          void LCD_ShowString(unsigned char Line, unsigned char Column, char *String) {
+ 103   1        unsigned char i;  // Loop counter
+ 104   1        LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+ 105   1        for (i = 0; String[i] != '\0'; i++) {  // Loop through each character in the string
+ 106   2          LCD_WriteData(String[i]);  // Write each character to the LCD
+ 107   2        }
+ 108   1      }
+ 109          
+ 110          /**
+ 111           * @brief Calculates the power of a number
+ 112           * @param X: The base number
+ 113           * @param Y: The exponent
+ 114           * @retval The result of X raised to the power Y
+ 115           */
+C51 COMPILER V9.60.7.0   LCD1602                                                           09/23/2024 11:36:20 PAGE 3   
+
+ 116          int LCD_Pow(int X, int Y) {
+ 117   1        unsigned char i;  // Loop counter
+ 118   1        int Result = 1;  // Initialize result as 1
+ 119   1        for (i = 0; i < Y; i++) {  // Loop Y times
+ 120   2          Result *= X;  // Multiply Result by X each time
+ 121   2        }
+ 122   1        return Result;  // Return the final result
+ 123   1      }
+ 124          
+ 125          /**
+ 126           * @brief Displays a number at the specified position
+ 127           * @param Line: The line number (1 or 2)
+ 128           * @param Column: The column number (1 to 16)
+ 129           * @param Number: The number to display
+ 130           * @param Length: The number of digits to display
+ 131           * @retval None
+ 132           */
+ 133          void LCD_ShowNum(unsigned char Line, unsigned char Column, unsigned int Number, unsigned char Length) {
+ 134   1        unsigned char i;  // Loop counter
+ 135   1        LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+ 136   1        for (i = Length; i > 0; i--) {  // Loop for the specified length
+ 137   2          LCD_WriteData(Number / LCD_Pow(10, i - 1) % 10 + '0');  // Extract and display each digit
+ 138   2        }
+ 139   1      }
+ 140          
+ 141          /**
+ 142           * @brief Displays a signed number at the specified position
+ 143           * @param Line: The line number (1 or 2)
+ 144           * @param Column: The column number (1 to 16)
+ 145           * @param Number: The signed number to display
+ 146           * @param Length: The number of digits to display
+ 147           * @retval None
+ 148           */
+ 149          //    void LCD_ShowSignedNum(unsigned char Line, unsigned char Column, unsigned int Number, unsigned char Le
+             -ngth) {
+ 150          //      unsigned char i;  // Loop counter
+ 151          //      unsigned int Number1;  // Variable to store the absolute value of Number
+ 152          //      LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+ 153          //      if (Number >= 0) {  // If the number is positive
+ 154          //        LCD_WriteData('+');  // Display a plus sign
+ 155          //        Number1 = Number;  // Use the original number
+ 156          //      } else {  // If the number is negative
+ 157          //        LCD_WriteData('-');  // Display a minus sign
+ 158          //        Number1 = -Number;  // Use the absolute value of the number
+ 159          //      }
+ 160          //      for (i = Length; i > 0; i--) {  // Loop for the specified length
+ 161          //        LCD_WriteData(Number1 / LCD_Pow(10, i - 1) % 10 + '0');  // Extract and display each digit
+ 162          //      }
+ 163          //    }
+ 164          
+ 165          
+ 166          
+ 167          /**
+ 168           * @brief Displays a hexadecimal number at the specified position
+ 169           * @param Line: The line number (1 or 2)
+ 170           * @param Column: The column number (1 to 16)
+ 171           * @param Number: The hexadecimal number to display
+ 172           * @param Length: The number of digits to display
+ 173           * @retval None
+ 174           */
+ 175          ////    void LCD_ShowHexNum(unsigned char Line, unsigned char Column, unsigned int Number, unsigned char Len
+             -gth) {
+C51 COMPILER V9.60.7.0   LCD1602                                                           09/23/2024 11:36:20 PAGE 4   
+
+ 176          ////      unsigned char i, SingleNumber;  // Loop counter and variable to store each digit
+ 177          ////      LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+ 178          ////      for (i = Length; i > 0; i--) {  // Loop for the specified length
+ 179          ////        SingleNumber = Number / LCD_Pow(16, i - 1) % 16;  // Extract each digit
+ 180          ////        if (SingleNumber < 10) {  // If the digit is less than 10
+ 181          ////          LCD_WriteData(SingleNumber + '0');  // Display it as a numeric character
+ 182          ////        } else {  // If the digit is 10 or greater
+ 183          ////          LCD_WriteData(SingleNumber - 10 + 'A');  // Display it as a letter (A-F)
+ 184          ////        }
+ 185          ////      }
+ 186          ////    }
+ 187          
+ 188          
+ 189          
+ 190          /**
+ 191           * @brief Displays a binary number at the specified position
+ 192           * @param Line: The line number (1 or 2)
+ 193           * @param Column: The column number (1 to 16)
+ 194           * @param Number: The binary number to display
+ 195           * @param Length: The number of digits to display
+ 196           * @retval None
+ 197           */
+ 198          ////    void ShowBinNum(unsigned char Line, unsigned char Column, unsigned int Number, unsigned char Length)
+             - {
+ 199          ////      unsigned char i;  // Loop counter
+ 200          ////      LCD_SetCursor(Line, Column);  // Set the cursor to the specified position
+ 201          ////      for (i = Length; i > 0; i--) {  // Loop for the specified length
+ 202          ////        LCD_WriteData((Number / LCD_Pow(2, i - 1) % 2) + '0');  // Extract and display each binary digit
+ 203          ////      }
+ 204          ////    }
+ 205          
+ 206          
+ 207          
+ 208          
+ 209          
+ 210          
+ 211          
+ 212          
+ 213          
+ 214          
+ 215          /*
+ 216           __Summary:__
+ 217          LCD_Delay(): Introduces a small delay for timing.
+ 218          LCD_WriteCommand(): Sends commands to the LCD.
+ 219          LCD_WriteData(): Sends data to be displayed on the LCD.
+ 220          LCD_SetCursor(): Positions the cursor on the LCD screen.
+ 221          LCD_Init(): Initializes the LCD with basic settings.
+ 222          LCD_ShowChar(): Displays a single character on the LCD.
+ 223          LCD_ShowString(): Displays a string on the LCD.
+ 224          LCD_Pow(): Calculates the power of a number.
+ 225          LCD_ShowNum(): Displays a number on the LCD.
+ 226          LCD_ShowSignedNum(): Displays a signed number (positive or negative).
+ 227          LCD_ShowHexNum(): Displays a hexadecimal number.
+ 228          ShowBinNum(): Displays a binary number.
+ 229          These functions allow you to control the LCD to display various forms of data, from single characters to s
+             -trings, and from numbers in decimal, hexadecimal, or binary formats.
+ 230          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    222    ----
+   CONSTANT SIZE    =   ----    ----
+C51 COMPILER V9.60.7.0   LCD1602                                                           09/23/2024 11:36:20 PAGE 5   
+
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      12
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

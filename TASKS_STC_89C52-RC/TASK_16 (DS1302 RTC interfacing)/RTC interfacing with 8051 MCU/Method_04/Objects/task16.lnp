@@ -1,0 +1,9 @@
+".\Objects\STARTUP.obj",
+".\Objects\mian.obj",
+".\Objects\lcd.obj",
+".\Objects\delay.obj",
+".\Objects\function.obj",
+".\Objects\calculator.obj",
+".\Objects\state.obj" 
+TO ".\Objects\task16" 
+PRINT(".\Listings\task16.m51") RAMSIZE(256) 

@@ -1,0 +1,103 @@
+C51 COMPILER V9.60.0.0   DS1302                                                            12/07/2021 12:52:47 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DS1302
+OBJECT MODULE PLACED IN .\Objects\ds1302.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ds1302.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ds
+                    -1302.lst) TABS(2) OBJECT(.\Objects\ds1302.obj)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #include "delay.h"
+   3          #ifndef RTC_SCLK
+   4          
+   5          #define RTC_SCLK = P3^6
+   6          #define RTC_IO   = P3^4
+   7          #define RTC_RST  = P3^5
+   8          
+   9          #endif
+  10          
+  11          
+  12          void write_ds1302_byte(char cmd) {
+  13   1         char i;
+  14   1      
+  15   1         for(i=0;i<=7;++i) {
+  16   2            output_bit(RTC_IO, shift_right(&cmd,1,0) );
+*** ERROR C141 IN LINE 16 OF ds1302.c: syntax error near '=', expected 'sizeof'
+  17   2            output_high(RTC_SCLK);
+  18   2            output_low(RTC_SCLK);
+  19   2         }
+  20   1      }
+  21          
+  22          void write_ds1302(char cmd, char data) {
+  23   1      
+  24   1         output_high(RTC_RST);
+  25   1         write_ds1302_byte(cmd);
+  26   1         write_ds1302_byte(data);
+  27   1         output_low(RTC_RST);
+  28   1      }
+  29          
+  30          char read_ds1302(char cmd) {
+  31   1         char i,data;
+  32   1      
+  33   1         output_high(RTC_RST);
+  34   1         write_ds1302_byte(cmd);
+  35   1      
+  36   1         for(i=0;i<=7;++i) {
+  37   2            shift_right(&data,1,input(RTC_IO));
+  38   2            output_high(RTC_SCLK);
+  39   2            delay_us(2);
+  40   2            output_low(RTC_SCLK);
+  41   2            delay_us(2);
+  42   2         }
+  43   1         output_low(RTC_RST);
+  44   1         return(data);
+  45   1      }
+  46          
+  47          void rtc_init() {
+  48   1         char x;
+  49   1         output_low(RTC_RST);
+  50   1         delay_us(2);
+  51   1         output_low(RTC_SCLK);
+  52   1         write_ds1302(0x8e,0);
+  53   1         write_ds1302(0x90,0xa6);
+C51 COMPILER V9.60.0.0   DS1302                                                            12/07/2021 12:52:47 PAGE 2   
+
+  54   1         x=read_ds1302(0x81);
+  55   1         if((x & 0x80)!=0)
+  56   1           write_ds1302(0x80,0);
+  57   1      }
+  58          
+  59          void rtc_set_datetime(char day, char mth, char year, char hr, char min) {
+  60   1         write_ds1302(0x86,day);
+  61   1         write_ds1302(0x88,mth);
+  62   1         write_ds1302(0x8c,year);
+  63   1         write_ds1302(0x8a,dow);
+  64   1         write_ds1302(0x84,hr);
+  65   1         write_ds1302(0x82,min);
+  66   1         write_ds1302(0x80,0);
+  67   1      }
+  68          
+  69          void rtc_get_date(char* day, char* mth, char* year) {
+  70   1         day = read_ds1302(0x87);
+  71   1         mth = read_ds1302(0x89);
+  72   1         year = read_ds1302(0x8d);
+  73   1      }
+  74          
+  75          
+  76          void rtc_get_time(char* hr, char* min, char* sec) {
+  77   1         hr = read_ds1302(0x85);
+  78   1         min = read_ds1302(0x83);
+  79   1         sec = read_ds1302(0x81);
+  80   1      }
+  81          
+  82          void rtc_write_nvr(char address, char data) {
+  83   1         write_ds1302(address|0xc0,data);
+  84   1      }
+  85          
+  86          char rtc_read_nvr(char address) {
+  87   1          return(read_ds1302(address|0xc1));
+  88   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

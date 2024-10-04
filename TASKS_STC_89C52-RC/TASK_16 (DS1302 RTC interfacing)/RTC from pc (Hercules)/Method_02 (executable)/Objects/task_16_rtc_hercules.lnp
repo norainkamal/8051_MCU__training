@@ -1,0 +1,4 @@
+".\Objects\main.obj",
+".\Objects\LCD.obj" 
+TO ".\Objects\task_16_rtc_hercules" 
+PRINT(".\Listings\task_16_rtc_hercules.m51") RAMSIZE(256) 

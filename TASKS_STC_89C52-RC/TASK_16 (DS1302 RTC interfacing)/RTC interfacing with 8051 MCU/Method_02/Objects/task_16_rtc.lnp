@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\rtc.obj",
+".\Objects\LCD.obj" 
+TO ".\Objects\task_16_rtc" 
+PRINT(".\Listings\task_16_rtc.m51") RAMSIZE(256) 

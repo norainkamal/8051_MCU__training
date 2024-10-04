@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\task_16_rtc_Hercules_Serial_Port" 
+PRINT(".\Listings\task_16_rtc_Hercules_Serial_Port.m51") RAMSIZE(256) 
